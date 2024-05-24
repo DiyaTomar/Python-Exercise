@@ -33,6 +33,21 @@ def api_gateway_event():
             "apiId": "1234567890",
             "stage": "prod",
             "resourcePath": path,
+            "authorizer": {
+                "jwt_claims": {
+                    "sub": "f4db93cc-69d6-42f8-9ce7-895776f177f5",
+                    "aud": "3nbirj4cbd2nckkci06rp93994",
+                    "event_id": "cf060e1a-cc84-11e8-998f-1b4823d32fab",
+                    "token_use": "id",
+                    "auth_time": 1539173141,
+                    "iss": "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_xuWlksbxv",
+                    "cognito:username": "root",
+                    "custom:tenant_id": "00000000-0000-0000-0000-000000000000",
+                    "exp": 1539176741,
+                    "iat": 1539173141,
+                    "email": "galton@evertz.com",
+                }
+            },
             "identity": {
                 "accountId": None,
                 "apiKey": None,
