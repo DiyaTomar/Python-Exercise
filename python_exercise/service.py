@@ -87,15 +87,6 @@ class Service:
         self.database.update_item(item_type=ItemType.ITEM, tenant_id=self.tenant_id, item_id=item_id, item_data=item)
 
         return item # returning the updated item
-        
-
-
-
-        
-
-        
-
-
 
 
 
