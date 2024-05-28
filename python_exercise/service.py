@@ -83,8 +83,8 @@ class Service:
         # Checking if item is in database
         self.database.get_item(item_type=ItemType.ITEM, tenant_id=self.tenant_id, item_id=item_id)
 
-        # Updating item
-        self.database.update_item(item_type=ItemType.ITEM, tenant_id=self.tenant_id, item_id=item_id)
+        # Updating item (passing in item info + the new data)
+        self.database.update_item(item_type=ItemType.ITEM, tenant_id=self.tenant_id, item_id=item_id, item_data=item)
 
         return item # returning the updated item
         
