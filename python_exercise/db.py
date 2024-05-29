@@ -128,11 +128,10 @@ class Db:
             raise ItemNotFound(item_type.value, tenant_id, item_id)
 
         return response.get("Item").get("data")
-    
 
     @staticmethod
     @start_span("database_update_item")
-    def update_item(item_type: ItemType,  tenant_id: str, item_id: str, item_data: Mapping[str, Any]):
+    def update_item(item_type: ItemType, tenant_id: str, item_id: str, item_data: Mapping[str, Any]):
         """
         Update item in the database
         :param item_type: One of the types from ItemType
@@ -145,19 +144,26 @@ class Db:
 
         logger.info(f"Updating [{item_id}] in DB for tenant: [{tenant_id}]")
 
-        keys: ItemKeys = ItemKeys.get_keys(item_type, tenant_id, item_id) # generates the primary key for the item
-        item = {PK_KEY: keys.primary, ITEM_ID_ATTRIBUTE: item_id, DATA_ATTRIBUTE: item_data} # creates a dictionary containing the item info (key, id, data)
-        kwargs = {"Item": item, "ConditionExpression": Attr(PK_KEY).exists()} # creating dictionary kwargs which will be passed to put_item (specifying the item)
+        keys: ItemKeys = ItemKeys.get_keys(item_type, tenant_id, item_id)  # generates the primary key for the item
+        item = {
+            PK_KEY: keys.primary,
+            ITEM_ID_ATTRIBUTE: item_id,
+            DATA_ATTRIBUTE: item_data,
+        }  # creates a dictionary containing the item info (key, id, data)
+        kwargs = {
+            "Item": item,
+            "ConditionExpression": Attr(PK_KEY).exists(),
+        }  # creating dictionary kwargs which will be passed to put_item (specifying the item)
 
         try:
-            restricted_table(TABLE_NAME, tenant_id).put_item(**kwargs) 
+            restricted_table(TABLE_NAME, tenant_id).put_item(**kwargs)
         except ClientError as client_error:
             error = client_error.response.get("Error", {})
             error_code = error.get("Code", "")
             logger.error(f"Error Code: [{error_code}]")
 
             if error_code == "ConditionalCheckFailedException":
-                raise ItemNotFound(item_type.value, tenant_id, item_id) from client_error # raise error if item to update cannot be found
+                raise ItemNotFound(
+                    item_type.value, tenant_id, item_id
+                ) from client_error  # raise error if item to update cannot be found
             raise
-        
-

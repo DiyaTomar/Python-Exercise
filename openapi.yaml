@@ -83,12 +83,12 @@ paths:
 
     # adding the put item operation's information
     put:
-      operationId: put_item 
+      operationId: put_item
       summary: Put Item
       description: Does the put operation to modify an existing Item in the database
       parameters: # takes in an item id to know which item to modify
         - $ref: '#/components/parameters/item_id'
-      responses: 
+      responses:
         '200':
           $ref: '#/components/responses/GetItemResponse' # shows the contents of the item
         '400':

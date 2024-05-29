@@ -77,17 +77,16 @@ class TestHandler:
         assert "errors" in body
         assert body["errors"][0]["code"] == "ItemConflict"
 
-
     # for the put feature (similar to get_item)
     @mock.patch("handler.Db")
     def test_put_item_success(self, mock_db, put_correct_item_event):
-        event, context = put_correct_item_event # changed to put_correct_item_event
+        event, context = put_correct_item_event  # changed to put_correct_item_event
 
         mock_db.return_value = MockDb()
-        response = handler.put_item(event, context) # changed to handler.put_item
+        response = handler.put_item(event, context)  # changed to handler.put_item
         assert response["statusCode"] == HTTPStatus.OK
         body = json.loads(response["body"])
-        assert body == {"success": True, "text": "some test text"}
+        assert {"success": body["success"], "text": body["text"]} == {"success": True, "text": "Hello"}
         headers = response["headers"]
         assert headers["Content-Type"] == "application/vnd.api+json"
 
@@ -96,12 +95,8 @@ class TestHandler:
         event, context = put_not_existing_item_event
 
         mock_db.return_value = MockDb()
-        response = handler.put_item(event, context) # changed to handler.put_item
+        response = handler.put_item(event, context)  # changed to handler.put_item
         assert response["statusCode"] == HTTPStatus.NOT_FOUND
         body = json.loads(response["body"])
         assert "errors" in body
         assert body["errors"][0]["code"] == "ItemNotFound"
-
-
-
-    

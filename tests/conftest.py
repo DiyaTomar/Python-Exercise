@@ -150,16 +150,21 @@ def get_not_existing_item_event(jwts, api_gateway_event):
 # for put feature (similar to get except changing path to put_item and changing method = "PUT")
 @pytest.fixture()
 def put_correct_item_event(jwts, api_gateway_event):
-    item = Item(success=True, text="Hello") # so that we can pass body of item
+    item = Item(success=True, text="Hello")  # so that we can pass body of item
     path_params = ItemIdPathParam(item_id=ITEM_ID)
-    event, context = api_gateway_event(path=f"/put_item/{ITEM_ID}", method="PUT", body=item.json(), path_params=path_params.dict()) # passing in body
+    event, context = api_gateway_event(
+        path=f"/put_item/{ITEM_ID}", method="PUT", body=item.json(), path_params=path_params.dict()
+    )  # passing in body
     event["headers"]["Authorization"] = jwts["IdToken"]
     yield event, context
+
 
 @pytest.fixture()
 def put_not_existing_item_event(jwts, api_gateway_event):
     item = Item(success=True, text="Hello")
     path_params = ItemIdPathParam(item_id="does-not-exist")
-    event, context = api_gateway_event(path="/put_item/does-not-exist", method="PUT", body=item.json(), path_params=path_params.dict()) # passing in body
+    event, context = api_gateway_event(
+        path="/put_item/does-not-exist", method="PUT", body=item.json(), path_params=path_params.dict()
+    )  # passing in body
     event["headers"]["Authorization"] = jwts["IdToken"]
     yield event, context

@@ -143,8 +143,8 @@ def get_item(event: ItemModel, context: LambdaContext) -> dict:
     return response
 
 
-
 # put_item function
+
 
 # pylint: disable=no-value-for-parameter
 @export_trace(export_service=ExportService.OTEL_COLLECTOR_LAYER)
@@ -162,10 +162,10 @@ def put_item(event: ItemModel, context: LambdaContext) -> dict:
 
     identity = get_identity_from_event(event=event.dict(), verify=False)
     path_parameters = ItemIdPathParam.validate(event.pathParameters)
-    item_id = path_parameters.item_id # id of item to update
+    item_id = path_parameters.item_id  # id of item to update
     tenant_id = identity.tenant
     request_id = event.requestContext.requestId
-    item_data = event.body.dict() # new data that will modify existing data
+    item_data = event.body.dict()  # new data that will modify existing data
 
     logger.info(f"Updating Item: [{item_id}]")
     logger.info(f"With Tenant Context: [{tenant_id}]")
@@ -174,13 +174,13 @@ def put_item(event: ItemModel, context: LambdaContext) -> dict:
     service = Service(Db(), tenant_id, identity.sub)
 
     try:
-        updated_item = service.put_item(item_id=item_id, item=item_data) # calls put_item function in service.py
+        updated_item = service.put_item(item_id=item_id, item=item_data)  # calls put_item function in service.py
         response = {
             "statusCode": HTTPStatus.OK,
             "headers": Headers(content_type="application/vnd.api+json").dict(by_alias=True),
             "body": json.dumps(updated_item, indent=4),
         }
-    except ItemNotFound as error: # couldn't find item to update
+    except ItemNotFound as error:  # couldn't find item to update
         error_context = {
             "id": request_id,
             "code": error.code,
@@ -193,7 +193,7 @@ def put_item(event: ItemModel, context: LambdaContext) -> dict:
             "headers": Headers(content_type="application/vnd.api+json").dict(by_alias=True),
             "body": ErrorsBody(errors=[error_context]).json(),
         }
-    except ClientError as error: # some other error
+    except ClientError as error:  # some other error
         error_context = {
             "id": request_id,
             "code": 400,

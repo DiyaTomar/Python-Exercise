@@ -354,24 +354,23 @@ Resources:
       RestApiId: !Ref API
       Stage: !Sub ${API.Stage}
 
-  
   # created PutItem resource
-  PutItem: 
-    Type: AWS::Serverless:Function # Lambda function
+  PutItem:
+    Type: AWS::Serverless::Function # Lambda function
     Properties:
       Handler: handler.put_item # put_item function in handler.py
       Role: !GetAtt 'ReadOnlyRole.Arn' # default read only role
       Environment:
         Variables:
           RESTRICTED_ROLE: !GetAtt 'DatabaseWriteRoleAssume.Arn' # write role env var
-      CodeUri: ../python_exercise 
+      CodeUri: ../python_exercise
       DeploymentPreference:
         Type: AllAtOnce
         Role: !ImportValue CODEDEPLOY-ROLE-ARN
       Events:
-        PutItem: 
-          Type: Api 
+        PutItem:
+          Type: Api
           Properties:
             Method: put # triggered by put request
-            path: /items/{item_id} # requires id of item to modify
+            Path: /items/{item_id} # requires id of item to modify
             RestApiId: !Ref API

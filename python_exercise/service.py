@@ -10,6 +10,7 @@ from evertz_io_observability.decorators import start_span
 from context import logger
 from db import Db, ItemType
 
+
 class Service:
     """Manager Context for Item Actions"""
 
@@ -58,7 +59,6 @@ class Service:
             # tests errors here
             raise error
         return item
-    
 
     # put item function
     @start_span("service_put_item")
@@ -73,19 +73,14 @@ class Service:
         """
 
         logger.info(f"Updating Item: {item_id}")
-        now = datetime.datetime.utcnow().isoformat() # getting the time that the data is modified
-        
-        item["modification_info"] = { # updating modification info
+        now = datetime.datetime.utcnow().isoformat()  # getting the time that the data is modified
+
+        item["modification_info"] = {  # updating modification info
             "last_modified_at": now,
             "last_modified_by": self.user_id,
         }
 
-        
         # Updating item (passing in item info + the new data)
         self.database.update_item(item_type=ItemType.ITEM, tenant_id=self.tenant_id, item_id=item_id, item_data=item)
 
-        return item # returning the updated item
-
-
-
-
+        return item  # returning the updated item
