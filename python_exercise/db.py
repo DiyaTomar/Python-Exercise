@@ -147,7 +147,7 @@ class Db:
 
         keys: ItemKeys = ItemKeys.get_keys(item_type, tenant_id, item_id) # generates the primary key for the item
         item = {PK_KEY: keys.primary, ITEM_ID_ATTRIBUTE: item_id, DATA_ATTRIBUTE: item_data} # creates a dictionary containing the item info (key, id, data)
-        kwargs = {"Item": item} # creating dictionary kwargs which will be passed to put_item (specifying the item)
+        kwargs = {"Item": item, "ConditionExpression": Attr(PK_KEY).exists()} # creating dictionary kwargs which will be passed to put_item (specifying the item)
 
         try:
             restricted_table(TABLE_NAME, tenant_id).put_item(**kwargs) 
