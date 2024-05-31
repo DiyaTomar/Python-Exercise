@@ -15,7 +15,16 @@ class MockDb(Db):
             ItemKeys.get_keys(item_type=ItemType.ITEM, tenant_id=TENANT_ID, item_id=ITEM_ID).primary
             == ItemKeys.get_keys(item_type=ItemType.ITEM, tenant_id=tenant_id, item_id=item_id).primary
         ):
-            return {"success": True, "text": "some test text"}
+            return { # put in an example entry to provide modification info field when returning
+                "success": True,
+                "text": "some test text",
+                "modification_info": {
+                    "created_at": "2024-02-27T22:19:14.010914",
+                    "created_by": "56a3a023-7781-4952-949d-354260ca8135",
+                    "last_modified_at": "2024-02-27T22:22:36.304879",
+                    "last_modified_by": "56a3a023-7781-4952-949d-354260ca8135",
+                },
+            }
         else:
             raise ItemNotFound(item_type.value, tenant_id, item_id)
 
@@ -37,6 +46,6 @@ class MockDb(Db):
             ItemKeys.get_keys(item_type=ItemType.ITEM, tenant_id=TENANT_ID, item_id=ITEM_ID).primary
             == ItemKeys.get_keys(item_type=ItemType.ITEM, tenant_id=tenant_id, item_id=item_id).primary
         ):
-            return {"success": True, "text": "some test text"}
+            return item_data
         else:
             raise ItemNotFound(item_type.value, tenant_id, item_id)

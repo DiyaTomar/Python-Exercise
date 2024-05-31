@@ -239,6 +239,23 @@ Resources:
               AWS: !GetAtt 'ReadOnlyRole.Arn'
             Action: sts:AssumeRole
 
+  # created new role
+  DatabaseReadWriteRoleAssume:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref DatabaseWrite
+        - !Ref DatabaseRead
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowRoleToAssumeRole
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt 'ReadOnlyRole.Arn'
+            Action: sts:AssumeRole
+
   CreateItem:
     Type: AWS::Serverless::Function
     Properties:
@@ -362,7 +379,7 @@ Resources:
       Role: !GetAtt 'ReadOnlyRole.Arn' # default read only role
       Environment:
         Variables:
-          RESTRICTED_ROLE: !GetAtt 'DatabaseWriteRoleAssume.Arn' # write role env var
+          RESTRICTED_ROLE: !GetAtt 'DatabaseReadWriteRoleAssume.Arn' # set to newly created role
       CodeUri: ../python_exercise
       DeploymentPreference:
         Type: AllAtOnce
