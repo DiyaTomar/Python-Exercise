@@ -239,6 +239,23 @@ Resources:
               AWS: !GetAtt 'ReadOnlyRole.Arn'
             Action: sts:AssumeRole
 
+  # created new role
+  DatabaseReadWriteRoleAssume:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref DatabaseWrite
+        - !Ref DatabaseRead
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowRoleToAssumeRole
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt 'ReadOnlyRole.Arn'
+            Action: sts:AssumeRole
+
   CreateItem:
     Type: AWS::Serverless::Function
     Properties:
@@ -353,3 +370,24 @@ Resources:
       DomainName: !ImportValue APIGATEWAY-DOMAIN-NAME
       RestApiId: !Ref API
       Stage: !Sub ${API.Stage}
+
+  # created PutItem resource
+  PutItem:
+    Type: AWS::Serverless::Function # Lambda function
+    Properties:
+      Handler: handler.put_item # put_item function in handler.py
+      Role: !GetAtt 'ReadOnlyRole.Arn' # default read only role
+      Environment:
+        Variables:
+          RESTRICTED_ROLE: !GetAtt 'DatabaseReadWriteRoleAssume.Arn' # set to newly created role
+      CodeUri: ../python_exercise
+      DeploymentPreference:
+        Type: AllAtOnce
+        Role: !ImportValue CODEDEPLOY-ROLE-ARN
+      Events:
+        PutItem:
+          Type: Api
+          Properties:
+            Method: put # triggered by put request
+            Path: /items/{item_id} # requires id of item to modify
+            RestApiId: !Ref API

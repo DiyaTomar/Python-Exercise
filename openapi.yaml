@@ -80,6 +80,32 @@ paths:
         passthroughBehavior: when_no_match
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetItem.Arn}:live/invocations
+
+    # adding the put item operation's information
+    put:
+      operationId: put_item
+      summary: Put Item
+      description: Modifies an existing Item in the database
+      parameters: # takes in an item id to know which item to modify
+        - $ref: '#/components/parameters/item_id'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetItemResponse' # shows the contents of the item
+        '400':
+          $ref: '#/components/responses/400BadRequestErrorResponse'
+        '404':
+          $ref: '#/components/responses/404NotFoundErrorResponse'
+      tags:
+        - python-exercise
+      security:
+        - BearerToken: []
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PutItem.Arn}:live/invocations
+
 components:
   parameters:
     item_id:

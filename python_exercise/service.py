@@ -59,3 +59,31 @@ class Service:
             # tests errors here
             raise error
         return item
+
+    # put item function
+    @start_span("service_put_item")
+    def put_item(self, item_id: str, item: dict) -> dict:
+        """
+        Modify an existing item
+
+        :param item_id: The id of the item to update
+        :param item: the new data to be saved
+
+        :return: The updated item
+        """
+
+        logger.info(f"Updating Item: {item_id}")
+        now = datetime.datetime.utcnow().isoformat()  # getting the time that the data is modified
+
+        existing_item = self.database.get_item(item_type=ItemType.ITEM, tenant_id=self.tenant_id, item_id=item_id)
+
+        # individually changing fields
+        existing_item["modification_info"]["last_modified_at"] = now
+        existing_item["modification_info"]["last_modified_by"] = self.user_id
+
+        item["modification_info"] = existing_item["modification_info"]
+
+        # Updating item (passing in item info + the new data)
+        self.database.update_item(item_type=ItemType.ITEM, tenant_id=self.tenant_id, item_id=item_id, item_data=item)
+
+        return item  # returning the updated item
